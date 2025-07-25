@@ -25,14 +25,15 @@ export default function Dashboard() {
   return (
     <div style={{ padding: '2rem' }}>
       <h1>Manage Calendar Links</h1>
+
       <h2>Personal</h2>
-      {button('google', 'Gmail', 'personal')}
-      {button('azure-ad', 'Outlook', 'personal')}
-      {button('credentials', 'iCloud', 'personal')}
+      {button('google',      'Gmail',            'personal')}
+      {button('azure-ad',    'Outlook',          'personal')}
+      {button('credentials', 'iCloud',           'personal')}
 
       <h2>Work</h2>
-      {button('google', 'Google Workspace', 'work')}
-      {button('azure-ad', 'Microsoft 365', 'work')}
+      {button('google',      'Google Workspace', 'work')}
+      {button('azure-ad',    'Microsoft 365',    'work')}
     </div>
   )
 }
