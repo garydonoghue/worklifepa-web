@@ -30,7 +30,8 @@ export default function Dashboard() {
       {button('azure-ad', 'Outlook', 'personal')}
       {button('credentials', 'iCloud', 'personal')}
 
-      <h2>Work</n      {button('google', 'Google Workspace', 'work')}
+      <h2>Work</h2>
+      {button('google', 'Google Workspace', 'work')}
       {button('azure-ad', 'Microsoft 365', 'work')}
     </div>
   )
