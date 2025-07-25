@@ -10,6 +10,7 @@ const prisma = new PrismaClient()
 export default NextAuth({
   adapter: PrismaAdapter(prisma),
   secret: process.env.NEXTAUTH_SECRET,
+  pages: { newUser: '/setup' },
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -24,16 +25,28 @@ export default NextAuth({
     }),
     CredentialsProvider({
       name: 'iCloud',
-      credentials: { username: { label: 'Apple ID', type: 'text' }, password: { label: 'App Password', type: 'password' } },
+      credentials: {
+        username: { label: 'Apple ID', type: 'text' },
+        password: { label: 'App Password', type: 'password' }
+      },
       async authorize(credentials) {
-        // Optionally validate credentials
         return { id: credentials.username, name: credentials.username }
       }
     })
   ],
   session: { strategy: 'jwt' },
   callbacks: {
-    async jwt({ token, account }) {
+    async signIn({ user, account }) {
+      // Tag the account with calendarType
+      const type = ['google', 'apple'].includes(account.provider) ? 'personal' : 'work'
+      await prisma.account.update({
+        where: { providerAccountId: account.providerAccountId },
+        data: { calendarType: type }
+      })
+      return true
+    },
+    async jwt({ token, user, account }) {
+      if (user) token.name = user.name
       if (account) {
         token.accessToken = account.access_token
         token.refreshToken = account.refresh_token
@@ -42,9 +55,9 @@ export default NextAuth({
       return token
     },
     async session({ session, token }) {
+      session.user.name = token.name
       session.user.accessToken = token.accessToken
       session.user.refreshToken = token.refreshToken
-      session.user.expires = token.expires
       return session
     }
   }
