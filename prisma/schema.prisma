@@ -10,20 +10,16 @@ generator client {
 model User {
   id            String    @id @default(cuid())
   name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
+  email         String    @unique
+  passwordHash  String
   accounts      Account[]
 }
 
 model Account {
   id                 String   @id @default(cuid())
   userId             String
-  provider           String
+  provider           String   // placeholder credential provider
   providerAccountId  String   @unique
-  refresh_token      String?
-  access_token       String?
-  expires_at         Int?
   calendarType       String?  // 'personal' or 'work'
   user               User     @relation(fields: [userId], references: [id])
 }
