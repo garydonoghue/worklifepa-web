@@ -1,24 +1,43 @@
-import { signIn, signOut, useSession } from 'next-auth/react'
+import { useState } from 'react'
+import { signIn, useSession } from 'next-auth/react'
 
 export default function Home() {
   const { data: session } = useSession()
+  const [isRegister, setIsRegister] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  const handleAuth = async (e) => {
+    e.preventDefault()
+    if (isRegister) {
+      // call our signup API
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({ email, password })
+      })
+      if (!res.ok) return alert('Error signing up')
+      setIsRegister(false)
+    } else {
+      signIn('credentials', { email, password })
+    }
+  }
+
+  if (session) return <p>Signed in as {session.user.email}</p>
+
   return (
-    <div style={{ padding: '2rem' }}>
-      {!session ? (
-        <>
-          <h1>Welcome to worklifepa</h1>
-          <p>Sign in or sign up:</p>
-          <button onClick={() => signIn('google')}>Google</button>
-          <button onClick={() => signIn('azure-ad')}>Microsoft</button>
-          <button onClick={() => signIn('credentials')}>iCloud</button>
-        </>
-      ) : (
-        <>
-          <h1>Hello, {session.user.name || session.user.email}</h1>
-          <button onClick={() => signOut()}>Sign Out</button>
-          <p><a href="/dashboard">Go to Dashboard →</a></p>
-        </>
-      )}
+    <div style={{ padding:'2rem' }}>
+      <h1>{isRegister ? 'Sign Up' : 'Sign In'}</h1>
+      <form onSubmit={handleAuth}>
+        <input type="email" placeholder="Email" value={email}
+          onChange={e => setEmail(e.target.value)} required />
+        <input type="password" placeholder="Password" value={password}
+          onChange={e => setPassword(e.target.value)} required />
+        <button type="submit">{isRegister ? 'Register' : 'Login'}</button>
+      </form>
+      <button onClick={()=>setIsRegister(!isRegister)}>
+        {isRegister ? 'Have an account? Sign In' : 'New user? Sign Up'}
+      </button>
     </div>
   )
 }
