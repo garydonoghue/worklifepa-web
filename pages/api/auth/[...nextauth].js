@@ -25,8 +25,9 @@ export default NextAuth({
     CredentialsProvider({
       name: 'iCloud',
       credentials: { username: { label: 'Apple ID', type: 'text' }, password: { label: 'App Password', type: 'password' } },
-      async authorize(creds) {
-        return { id: creds.username, name: creds.username }
+      async authorize(credentials) {
+        // Optionally validate credentials
+        return { id: credentials.username, name: credentials.username }
       }
     })
   ],
